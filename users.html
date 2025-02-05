@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+    <link rel="stylesheet" href="userstyle.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+</head>
+<style>
+    #clear-notifications-button {
+        background-color: #ff9800;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+    #clear-notifications-button:hover {
+        background-color: #f57c00;
+    }
+</style>
+<body>
+    <a href="index.html">
+        <div class="logo-container">
+            <img src="" alt="Logo" class="logo">
+        </div>
+    </a>
+    
+    <h1>Users of myStirixisApp</h1>
+    
+    <input type="text" id="search-bar" placeholder="Search Users..." onkeyup="filterUsers()">    
+    <button id="delete-user-button" onclick="openModal()">Delete User</button>
+
+    <div id="user-list"></div>
+    <button id="clear-notifications-button" onclick="clearReadNotifications()">CLEAR NOTIFICATIONS</button>
+ 
+    <div class="container">
+        <div id="confirmationModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <p>Are you sure you want to delete the user?</p>
+                <button id="confirmDelete" onclick="deleteSelectedUsers()">Yes</button>
+                <button onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div id="noSelectionMessage" style="color: red; display: none;">No user selected for deletion</div>
+
+    <script>
+        let users = []; 
+
+        async function fetchUsers() {
+            const userListDiv = document.getElementById("user-list");
+
+            try {
+                const response = await fetch('/users');
+                users = await response.json(); 
+
+                if (response.ok) {
+                    displayUsers(users);
+                } else {
+                    userListDiv.innerHTML = 'No users found';
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                userListDiv.innerHTML = 'Error fetching users';
+            }
+        }
+
+        function displayUsers(userList) {
+            const userListDiv = document.getElementById("user-list");
+            userListDiv.innerHTML = '';
+
+            userList.forEach(user => {
+                const userDiv = document.createElement('div');
+                userDiv.className = 'user';
+                userDiv.innerHTML = `
+                    <input type="checkbox" class="user-checkbox" value="${user.username}"> 
+                    <strong>Company Name:</strong> ${user.cmpname}<br>
+                    <strong>Username:</strong> ${user.username}<br>
+                    <strong>Password:</strong> ${user.password}<br>
+                    <strong>Email:</strong> ${user.email}<br>
+                    <strong>VAT:</strong> ${user.vat}<br>
+                    <strong>Payroll Client:</strong> ${user.isPayroll}<br>
+                    <strong>Accounting Client:</strong> ${user.isAccounting}<br>
+                    <strong>Sales Client:</strong> ${user.isSales}<br>
+                    <strong>Start Date:</strong> ${user.startDate}<br>
+                    <strong>Contract End Date:</strong> ${user.endDate}<br>
+                    <hr>
+                `;
+                userListDiv.appendChild(userDiv);
+            });
+        }
+
+        function filterUsers() {
+            const searchInput = document.getElementById("search-bar").value.toLowerCase();
+            const filteredUsers = users.filter(user => {
+                return user.username.toLowerCase().includes(searchInput) || 
+                       user.email.toLowerCase().includes(searchInput) || 
+                       user.vat.toString().includes(searchInput);
+            });
+            displayUsers(filteredUsers);
+        }
+
+        function openModal() {
+            const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+            if (checkboxes.length === 0) {
+                document.getElementById("noSelectionMessage").style.display = "block";
+            } else {
+                document.getElementById("noSelectionMessage").style.display = "none";
+                document.getElementById("confirmationModal").style.display = "block";
+            }
+        }
+
+        function closeModal() {
+            document.getElementById("confirmationModal").style.display = "none";
+            document.getElementById("noSelectionMessage").style.display = "none";
+        }
+
+        async function clearReadNotifications() {
+            const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+
+            if (checkboxes.length === 0) {
+                alert('No users selected for clearing notifications.');
+                return;
+            }
+
+            const confirmClear = confirm("Are you sure you want to clear notifications for the selected users?");
+            if (!confirmClear) return;
+
+            try {
+                for (const checkbox of checkboxes) {
+                    const username = checkbox.value;
+                    await fetch(`/users/${username}/clearNotifications`, { method: 'PATCH' });
+                }
+                alert('Notifications cleared successfully!');
+                window.location.reload();
+            } catch (error) {
+                console.error('Error clearing notifications:', error);
+                alert('An error occurred while clearing notifications.');
+            }
+        }
+
+        async function deleteSelectedUsers() {
+            const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+            const usernamesToDelete = Array.from(checkboxes).map(cb => cb.value);
+
+            try {
+                for (const username of usernamesToDelete) {
+                    await fetch(`/users/${username}`, { method: 'DELETE' });
+                }
+                alert('Selected users have been deleted.');
+                window.location.reload();
+            } catch (error) {
+                console.error('Error deleting users:', error);
+            }
+
+            closeModal();
+        }
+
+        window.onload = fetchUsers;
+    </script>
+</body>
+</html>

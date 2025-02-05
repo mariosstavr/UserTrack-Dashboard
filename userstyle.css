@@ -1,0 +1,117 @@
+/* Style for buttons */
+button {
+    background-color: #007bff; /* Primary button color */
+    color: white; /* Button text color */
+    border: none;
+    padding: 10px 20px; /* Button padding */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 16px; /* Button font size */
+    transition: background-color 0.3s; /* Smooth background color transition */
+}
+
+button:hover {
+    background-color: #0056b3; /* Darker background color on hover */
+}
+.button-container {
+    display: flex; /* Use flexbox to align buttons */
+    gap: 10px; /* Space between buttons */
+    justify-content: center; /* Center buttons horizontally */
+    margin: 20px 0; /* Add margin above and below */
+}
+h1 {
+    text-align: center;
+}
+.logo-container {
+    text-align: center;
+    margin-top: 20px;
+}
+body {
+    background-color: #ccc;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.logo-container {
+    text-align: center;
+    margin-top: 20px;
+}
+label {
+    font-weight: bold; /* Make the label text bold */
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+/* Style the input field */
+input[type="text"], input[type="text"], input[type="email"] {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 250px; /* Adjust width as needed */
+    margin-bottom: 20px;
+
+   
+}
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+  /* Basic styles for the modal */
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+#search-bar {
+    margin-left: 50px;
+}
+
+#delete-user-button {
+    margin-left: 20px; /* Move the button 20px to the right */
+}
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#user-list {
+    margin-left: 20px; /* Adjust this value to move the list further to the right */
+    margin-right: 20px; /* Optional: ensures the right margin is consistent */
+    padding: 20px;
+    background-color: #dddddd; /* Optional: adds a background color to the list */
+    border-radius: 10px; /* Optional: rounded corners for the list */
+}
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+}

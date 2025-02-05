@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="userstyle.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+    <title>Project1</title>
+</head>
+<body>   
+   
+    <a href="index.html">
+        <div class="logo-container">
+            <img src="PROJECT1.png" alt="Logo" class="logo">
+        </div></a>
+    <h1>Create User for Project1</h1>
+    <form id="dataForm">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required><br>
+
+        <label for="password">Password:</label>
+        <input type="text" id="password" name="password" required><br>
+
+        <label for="cmpname">Company Name:</label>
+        <input type="text" id="cmpname" name="cmpname" required><br>
+
+        <label for="vat">VAT Number:</label>
+        <input type="text" id="vat" name="vat" pattern="\d{9}" title="Please enter exactly 9 digits." required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="startDate" required><br>
+
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" name="endDate" required><br>
+
+        <label for="isAccounting">Accounting Client:</label>
+        <select id="isAccounting" name="isAccounting" required>
+            <option value="0">NO</option>
+            <option value="1">YES</option>
+        </select><br>
+
+        <label for="isPayroll">Payroll Client:</label>
+        <select id="isPayroll" name="isPayroll" required>
+            <option value="0">NO</option>
+            <option value="1">YES</option>
+        </select><br>
+
+        <label for="isSales">Sales Client:</label>
+        <select id="isSales" name="isSales" required>
+            <option value="0">NO</option>
+            <option value="1">YES</option>
+        </select><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('dataForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = {};
+            formData.forEach((value, key) => { data[key] = value });
+
+            try {
+                const response = await fetch('/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+                const result = await response.text();
+                alert(result);
+                window.location.reload(); // Reload the page after successful submission
+
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

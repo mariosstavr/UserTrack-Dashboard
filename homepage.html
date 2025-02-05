@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renewal Project1</title>
+    <link rel="stylesheet" href="userstyle.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <a href="index.html">
+        <div class="logo-container">
+            <img src="PROJECT1.png" alt="Logo" class="logo">
+        </div>
+    </a>
+    
+    <h1>Contract Renewal</h1>
+    <form id="updateForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <label for="endDate">Set Expiry Date of Renewal:</label>
+        <input type="date" id="endDate" name="endDate" required><br><br>
+
+        <label>Current Expiry Date:</label>
+        <p id="currentEndDate">Current Contract Expiry Date.</p><br><br>
+        
+        <p id="errorMessage" style="color: red; display: none;">Incorrect Username/Password</p>
+
+        <!-- Added Check Button -->
+        <button type="button" id="checkBtn">Check</button><br><br>
+        <button type="submit">Renew</button>
+    </form>
+
+    <script>
+         document.addEventListener("DOMContentLoaded", function() {
+            // Check button to fetch and display the current endDate
+            document.getElementById('checkBtn').addEventListener('click', async function() {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const errorMessage = document.getElementById('errorMessage');
+
+                errorMessage.style.display = 'none'; // Hide error message initially
+
+                if (username && password) {
+                    try {
+                        const response = await fetch(`/getEndDate?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.endDate) {
+                                const endDate = new Date(data.endDate);
+                                const formattedDate = endDate.toLocaleDateString('en-GB', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric'
+                                });
+                                document.getElementById('currentEndDate').textContent = formattedDate;
+                            } else {
+                                document.getElementById('currentEndDate').textContent = 'No date found';
+                            }
+                        } else {
+                            const errorData = await response.json();
+                            errorMessage.textContent = errorData.message || 'Error loading data';
+                            errorMessage.style.display = 'block';
+                        }
+                    } catch (error) {
+                        console.error('Error fetching endDate:', error);
+                        errorMessage.textContent = 'Error connecting to the server';
+                        errorMessage.style.display = 'block';
+                    }
+                } else {
+                    errorMessage.textContent = 'Please fill in both fields';
+                    errorMessage.style.display = 'block';
+                }
+            });
+
+            // Submit form to update endDate
+            document.getElementById('updateForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const newEndDate = document.getElementById('endDate').value;
+                const errorMessage = document.getElementById('errorMessage');
+
+                errorMessage.style.display = 'none';
+
+                if (!username || !password || !newEndDate) {
+                    errorMessage.textContent = 'Please fill in all required fields';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/updateEndDate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password,
+                            endDate: newEndDate
+                        }),
+                    });
+
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        alert('Expiry Date updated successfully!');
+                        window.location.reload();
+                    } else {
+                        errorMessage.textContent = result.message || 'Error during update';
+                        errorMessage.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Error updating endDate:', error);
+                    errorMessage.textContent = 'Error connecting to the server';
+                    errorMessage.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
